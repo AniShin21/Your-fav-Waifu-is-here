@@ -10,7 +10,7 @@ from helper_func import subscribed, decode, get_messages
 from database.database import add_user, present_user, del_user, full_userbase
 
 # Add time in seconds for waiting before deleting
-SECONDS = int(os.getenv("SECONDS", "600"))
+SECONDS = int(os.getenv("SECONDS", "300"))
 
 # Start command handler
 
@@ -166,7 +166,7 @@ async def start_command(client: Client, message: Message):
         # Notify the user about the deletion process and wait before deletion
         deletion_msg = await client.send_message(
             chat_id=message.from_user.id,
-            text="<b><center>❗<u> Important </u> ❗</center></b>\n\nSorry Dude This File/Video Will Be Deleted in 10 min\n\n🍁So, Please Immediately Save This File In Your Saved Messages.🍂",
+            text="<b><center>❗<u> Note: </u> ❗</center></b>\nDarling !!\n All the files messages will be deleted after 5 minutes. Please save or forward this media messages to your personal saved messages to avoid losing them! 🥺✨",
             parse_mode=ParseMode.HTML
         )
 
