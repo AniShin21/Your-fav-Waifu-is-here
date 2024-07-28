@@ -9,7 +9,7 @@ async def cb_handler(client: Bot, query: CallbackQuery):
     data = query.data
     if data == "about":
         await query.message.edit_text(
-            text=f"<b>╭━━━━━━━━━━━━━━━➣\n┣⪼ Owner : <a href='tg://user?id=5745818770'>Vergil</a>\n┣⪼ Bot Updates : <a href'https://t.me/ikigai_bots'>IKigai</a>\n┣⪼ Support Channel: <a href='https://t.me/ikigai_chats'>Ikigai Support</a>\n┣⪼ Our Network :<a href='https://t.me/ikigai_Network'>Ikigai Network</a>\n┣⪼ Movies Channel :<a href='https://t.me/ikigai_Movies'>Ikigai Movies</a>\n╰───────────────⍟</b>",
+            text=f"<b>╭━━━━━━━━━━━━━━━➣\n┣⪼ Owner : <a href='tg://user?id={OWNER_ID}'>Vergil</a>\n┣⪼ Bot Updates : <a href='https://t.me/ikigai_bots'>IKigai</a>\n┣⪼ Support Channel: <a href='https://t.me/ikigai_chats'>Ikigai Support</a>\n┣⪼ Our Network :<a href='https://t.me/ikigai_Network'>Ikigai Network</a>\n┣⪼ Movies Channel :<a href='https://t.me/ikigai_Movies'>Ikigai Movies</a>\n╰───────────────⍟</b>",
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
                 [
