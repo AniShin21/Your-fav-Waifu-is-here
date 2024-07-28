@@ -42,7 +42,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "5"))
 
 # start message
 START_MSG = os.environ.get(
-    "START_MESSAGE", "<b><i>Yo {mention}\n\nI work 24/7 to provide to you animes 👀</i></b>")
+    "START_MESSAGE", "<b><i>Hᴇʟʟᴏ Tʜᴇʀᴇ {mention} Dᴀʀʟɪɴɢ 👋\n\nI sᴛᴀʏ ᴜᴘ ᴀʟʟ ɴɪɢʜᴛ ᴛᴏ ғᴜʟғɪʟʟ ʏᴏᴜʀ ғᴀɴᴛᴀsɪᴇs 🫦✨</i></b>")
 
 try:
     ADMINS = [5745818770]
@@ -53,7 +53,7 @@ except ValueError:
 
 
 FORCE_MSG = os.environ.get(
-    "FORCE_SUB_MESSAGE", "<b><center>Hey {first}</center></b>⚡️Confirm Yourself As Human By Joining The Channel Below 🤖")
+    "FORCE_SUB_MESSAGE", "<b><center>Hey {first}</center></b>\n𝖩𝗈𝗂𝗇 𝖬𝗒 𝖡𝖺𝖼𝗄𝗎𝗉 𝖢𝗁𝖺𝗇𝗇𝖾𝗅𝗌 𝖲𝗈 𝖳𝗁𝖺𝗍 𝖶𝖾 𝖢𝖺𝗇 𝖠𝗅𝗐𝖺𝗒𝗌 𝖲𝗍𝖺𝗒 𝖢𝗈𝗇𝗇𝖾𝖼𝗍𝖾𝖽 😘🫶✨")
 
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 
@@ -64,7 +64,7 @@ DISABLE_CHANNEL_BUTTON = os.environ.get(
     "DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "I Aᴍ Aɴ Iɴᴛʀᴏᴠᴇʀᴛ, Sᴛᴏᴘ Mᴇssᴀɢɪɴɢ ✋😐"
+USER_REPLY_TEXT = "‌ 𝖠𝗂𝗌𝗁~ 𝖲𝗍𝗈𝗉!! *𝖻𝗅𝗎𝗌𝗁*"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(5745818770)
