@@ -74,23 +74,20 @@ async def start_command(client: Client, message: Message):
                 reply_markup = None
 
             try:
-                snt_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
-                await asyncio.sleep(0.5)
-                snt_msgs.append(snt_msg)
+                f = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
+
             except FloodWait as e:
                 await asyncio.sleep(e.x)
-                snt_msg = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
-                snt_msgs.append(snt_msg)
-            except:
-                pass
-        await message.reply_text("Files will be deleted in 10 minutes.\nForward to saved messages before downloading")
-        await asyncio.sleep(SECONDS)
+                f = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
 
-        for snt_msg in snt_msgs:
-            try:
-                await snt_msg.delete()
             except:
                 pass
+        k = await client.send_message(chat_id = message.from_user.id, text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis video / file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video / file to somewhere else and start downloading there.")
+        await asyncio.sleep(SECONDS)
+        await f.delete()
+        await k.edit_text("Your video / file is successfully deleted !")
+
+
         return
     else:
         # No command with arguments, handle the 'else' block
