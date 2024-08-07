@@ -21,15 +21,15 @@ APP_ID = int(os.environ.get("APP_ID", "28196802"))
 API_HASH = os.environ.get("API_HASH", "dccf92fd1c0bad1b7de1e8efc63654ff")
 
 
-OWNER = os.environ.get("OWNER", "@VergilGfx")  # Owner username
-OWNER_ID = int(os.environ.get("OWNER_ID", "5745818770"))  # Owner user id
+OWNER = os.environ.get("OWNER", "@Obviously_Aizen")  # Owner username
+OWNER_ID = int(os.environ.get("OWNER_ID", "-1002027441561"))  # Owner user id
 DB_URL = os.environ.get("DB_URL", "")
 DB_NAME = os.environ.get("DB_NAME", "")
 
 
 # Your Bot Token System Goes Here
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "publicearn.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "b323441bc55ef14be63018992134d393a62a9da9")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "instantearn.in")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "7e2bbc9a4cab386cbc14e0ac5a106d11180f8d48")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Ultroid_Official/18")
