@@ -2,7 +2,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant
 from config import ADMINS, OWNER_ID
-from bot import Bot
 from database.prem_db import add_premium_user, remove_premium_user, get_premium_users, is_premium
 from datetime import datetime
 import asyncio
@@ -58,12 +57,29 @@ async def remove_prem_user(client: Client, message: Message):
     owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been removed."
     await client.send_message(OWNER_ID, owner_message)
 
+@Bot.on_message(filters.command('all_prems') & filters.private & filters.user(ADMINS))
+async def all_prems(client: Client, message: Message):
+    users = get_premium_users()
+    if not users:
+        await message.reply_text("No premium users found.")
+        return
+
+    response = "List of all premium users and their stats:\n\n"
+    for user in users:
+        user_id = user['user_id']
+        user_name = (await client.get_users(user_id)).full_name
+        expiry_date = user['expiry_date'].strftime("%Y-%m-%d %H:%M:%S")
+        response += f"User: {user_name} (ID: {user_id})\nExpires: {expiry_date}\n\n"
+
+    await message.reply_text(response)
+
 # Check for expired memberships and notify users and owner
 async def check_expired_memberships(client: Client):
     users = get_premium_users()
     for user in users:
         if user['expiry_date'] < datetime.now():
             user_id = user['user_id']
+            user_name = (await client.get_users(user_id)).full_name  # Get the user's name
             # Notify the user
             user_message = "Hey Dude What's Up\n\nYour membership is expired. For more info, contact the Owner or Admins."
             try:
@@ -71,8 +87,8 @@ async def check_expired_memberships(client: Client):
             except:
                 pass  # If user is not found, handle it gracefully
 
-            # Notify the owner
-            owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has expired."
+            # Notify the owner with the user's name
+            owner_message = f"Hello My Hot Owner\n\nThis Person ({user_name} - {user_id})'s membership has expired."
             await client.send_message(OWNER_ID, owner_message)
 
             # Automatically remove the expired membership
