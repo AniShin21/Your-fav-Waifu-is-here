@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant
 from config import ADMINS, OWNER_ID
-from database.prem_db import add_premium_user, remove_premium_user, get_premium_users, is_premium
+from database.database import add_premium_user, remove_premium_user, get_premium_users, is_premium
 from datetime import datetime
 from bot import Bot
 import asyncio
