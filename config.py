@@ -46,7 +46,7 @@ SECONDS = int(os.getenv("SECONDS", "300"))  # auto delete in seconds
 
 
 PORT = os.environ.get("PORT", "8080")
-TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "6"))
+TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "7"))
 
 
 # start message
