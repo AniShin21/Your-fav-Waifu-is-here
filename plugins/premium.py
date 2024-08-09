@@ -3,11 +3,11 @@ from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant
 from config import ADMINS, OWNER_ID
 from database.database import add_premium_user, remove_premium_user, get_premium_users, is_premium
-from datetime import datetime
-from bot import Bot
+from datetime import datetime, timedelta
 import asyncio
+from bot import Bot
 
-@Bot.on_message(filters.command('add_prem') & filters.private & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('add_prem') & filters.user(ADMINS))
 async def add_prem_user(client: Client, message: Message):
     await message.reply_text("Please provide the user ID to add to premium:")
     response = await client.listen(message.chat.id, filters=filters.text)
@@ -35,17 +35,7 @@ async def add_prem_user(client: Client, message: Message):
     except UserNotParticipant:
         await message.reply_text("User Not Found in Bot")
 
-@Bot.on_callback_query(filters.regex(r"^add_prem:(\d+):(\d+)$") & filters.user(ADMINS))
-async def on_add_prem_callback(client: Client, callback_query):
-    user_id, duration = map(int, callback_query.data.split(":")[1:])
-    add_premium_user(user_id, duration)
-    await callback_query.answer(f"User {user_id} added to premium for {duration} days!")
-
-    # Notify the owner about the addition
-    owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been added for {duration} days."
-    await client.send_message(OWNER_ID, owner_message)
-
-@Bot.on_message(filters.command('remove_prem') & filters.private & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('remove_prem') & filters.user(ADMINS))
 async def remove_prem_user(client: Client, message: Message):
     await message.reply_text("Please provide the user ID to remove from premium:")
     response = await client.listen(message.chat.id, filters=filters.text)
@@ -58,9 +48,9 @@ async def remove_prem_user(client: Client, message: Message):
     owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been removed."
     await client.send_message(OWNER_ID, owner_message)
 
-@Bot.on_message(filters.command('all_prems') & filters.private & filters.user(ADMINS))
+@Bot.on_message(filters.private & filters.command('all_prems') & filters.user(ADMINS))
 async def all_prems(client: Client, message: Message):
-    users = get_premium_users()
+    users = await get_premium_users()
     if not users:
         await message.reply_text("No premium users found.")
         return
@@ -69,16 +59,16 @@ async def all_prems(client: Client, message: Message):
     for user in users:
         user_id = user['user_id']
         user_name = (await client.get_users(user_id)).full_name
-        expiry_date = user['expiry_date'].strftime("%Y-%m-%d %H:%M:%S")
+        expiry_date = datetime.fromtimestamp(user['expiry_date']).strftime("%Y-%m-%d %H:%M:%S")
         response += f"User: {user_name} (ID: {user_id})\nExpires: {expiry_date}\n\n"
 
     await message.reply_text(response)
 
 # Check for expired memberships and notify users and owner
 async def check_expired_memberships(client: Client):
-    users = get_premium_users()
+    users = await get_premium_users()
     for user in users:
-        if user['expiry_date'] < datetime.now():
+        if user['expiry_date'] < datetime.now().timestamp():
             user_id = user['user_id']
             user_name = (await client.get_users(user_id)).full_name  # Get the user's name
             # Notify the user
@@ -93,12 +83,10 @@ async def check_expired_memberships(client: Client):
             await client.send_message(OWNER_ID, owner_message)
 
             # Automatically remove the expired membership
-            remove_premium_user(user_id)
+            await remove_premium_user(user_id)
 
 # Schedule the membership check (e.g., every hour)
 async def schedule_membership_check(client: Client):
     while True:
         await check_expired_memberships(client)
         await asyncio.sleep(3600)  # Check every hour
-
-
