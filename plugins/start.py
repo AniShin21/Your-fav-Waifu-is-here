@@ -29,6 +29,7 @@ from config import (
 )
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import add_user, del_user, full_userbase, present_user
+from database.prem_db import is_premium
 from shortzy import Shortzy
 
 """add time in seconds for waiting before delete 
@@ -42,10 +43,10 @@ async def start_command(client: Client, message: Message):
     owner_id = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner
-    if id == owner_id:
+    if id == owner_id or is_premium(user_id):
         # Owner-specific actions
         # You can add any additional actions specific to the owner here
-        await message.reply("You are the owner! Additional actions can be added here.")
+        await message.reply("You have special access! Additional actions can be added here.")
 
     else:
         if not await present_user(id):
