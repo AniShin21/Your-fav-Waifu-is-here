@@ -4,6 +4,7 @@ from pyrogram.errors import UserNotParticipant
 from config import ADMINS, OWNER_ID
 from database.prem_db import add_premium_user, remove_premium_user, get_premium_users, is_premium
 from datetime import datetime
+from bot import Bot
 import asyncio
 
 @Bot.on_message(filters.command('add_prem') & filters.private & filters.user(ADMINS))
