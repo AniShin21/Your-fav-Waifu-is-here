@@ -1,41 +1,52 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from datetime import datetime
-from config import ADMINS
+from pyrogram.errors import UserNotParticipant
+from config import ADMINS, OWNER_ID
 from bot import Bot
-
-# Import functions from database script
-from database import add_premium_user, remove_premium_user, get_premium_users, is_premium
-from config import ADMINS
+from database.prem_db import add_premium_user, remove_premium_user, get_premium_users, is_premium
+from datetime import datetime
+import asyncio
 
 @Bot.on_message(filters.command('add_prem') & filters.private & filters.user(ADMINS))
-async def add_prem_user(client: Bot, message: Message):
+async def add_prem_user(client: Client, message: Message):
     await message.reply_text("Please provide the user ID to add to premium:")
     response = await client.listen(message.chat.id, filters=filters.text)
 
     user_id = int(response.text.strip())
-    buttons = [
-        [InlineKeyboardButton("1 Week", callback_data=f"add_prem:{user_id}:7")],
-        [InlineKeyboardButton("1 Month", callback_data=f"add_prem:{user_id}:30")],
-        [InlineKeyboardButton("3 Months", callback_data=f"add_prem:{user_id}:90")],
-        [InlineKeyboardButton("6 Months", callback_data=f"add_prem:{user_id}:180")],
-        [InlineKeyboardButton("12 Months", callback_data=f"add_prem:{user_id}:365")],
-        [InlineKeyboardButton("1 Minute (Test)", callback_data=f"add_prem:{user_id}:1")]
-    ]
-    
-    await message.reply_text(
-        "Select the duration for premium membership:",
-        reply_markup=InlineKeyboardMarkup(buttons)
-    )
+
+    # Check if the user is currently using the bot
+    try:
+        await client.get_chat_member(message.chat.id, user_id)
+        # If the user is found, proceed to add them to premium
+        buttons = [
+            [InlineKeyboardButton("1 Week", callback_data=f"add_prem:{user_id}:7")],
+            [InlineKeyboardButton("1 Month", callback_data=f"add_prem:{user_id}:30")],
+            [InlineKeyboardButton("3 Months", callback_data=f"add_prem:{user_id}:90")],
+            [InlineKeyboardButton("6 Months", callback_data=f"add_prem:{user_id}:180")],
+            [InlineKeyboardButton("12 Months", callback_data=f"add_prem:{user_id}:365")],
+            [InlineKeyboardButton("1 Minute (Test)", callback_data=f"add_prem:{user_id}:1")]
+        ]
+        
+        await message.reply_text(
+            "Select the duration for premium membership:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    except UserNotParticipant:
+        await message.reply_text("User Not Found in Bot")
 
 @Bot.on_callback_query(filters.regex(r"^add_prem:(\d+):(\d+)$") & filters.user(ADMINS))
-async def on_add_prem_callback(client: Bot, callback_query):
+async def on_add_prem_callback(client: Client, callback_query):
     user_id, duration = map(int, callback_query.data.split(":")[1:])
     add_premium_user(user_id, duration)
     await callback_query.answer(f"User {user_id} added to premium for {duration} days!")
 
+    # Notify the owner about the addition
+    owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been added for {duration} days."
+    await client.send_message(OWNER_ID, owner_message)
+
 @Bot.on_message(filters.command('remove_prem') & filters.private & filters.user(ADMINS))
-async def remove_prem_user(client: Bot, message: Message):
+async def remove_prem_user(client: Client, message: Message):
     await message.reply_text("Please provide the user ID to remove from premium:")
     response = await client.listen(message.chat.id, filters=filters.text)
 
@@ -43,25 +54,34 @@ async def remove_prem_user(client: Bot, message: Message):
     remove_premium_user(user_id)
     await message.reply_text(f"User {user_id} removed from premium.")
 
-@Bot.on_message(filters.command('prem_users') & filters.private & filters.user(ADMINS))
-async def list_prem_users(client: Bot, message: Message):
+    # Notify the owner about the removal
+    owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been removed."
+    await client.send_message(OWNER_ID, owner_message)
+
+# Check for expired memberships and notify users and owner
+async def check_expired_memberships(client: Client):
     users = get_premium_users()
-    if not users:
-        await message.reply_text("No premium users found.")
-        return
-
     for user in users:
-        user_details = f"User ID: {user['user_id']}\nExpiry: {user['expiry_date'].strftime('%Y-%m-%d %H:%M:%S')}"
-        button = InlineKeyboardButton("Show Details", callback_data=f"show_prem_details:{user['user_id']}")
-        await message.reply_text(user_details, reply_markup=InlineKeyboardMarkup([[button]]))
+        if user['expiry_date'] < datetime.now():
+            user_id = user['user_id']
+            # Notify the user
+            user_message = "Hey Dude What's Up\n\nYour membership is expired. For more info, contact the Owner or Admins."
+            try:
+                await client.send_message(user_id, user_message)
+            except:
+                pass  # If user is not found, handle it gracefully
 
-@Bot.on_callback_query(filters.regex(r"^show_prem_details:(\d+)$") & filters.user(ADMINS))
-async def on_show_prem_details(client: Bot, callback_query):
-    user_id = int(callback_query.data.split(":")[1])
-    user = premium_users.find_one({'user_id': user_id})
-    if user:
-        details = f"User ID: {user['user_id']}\nExpiry: {user['expiry_date'].strftime('%Y-%m-%d %H:%M:%S')}"
-        await callback_query.answer(details, show_alert=True)
-    else:
-        await callback_query.answer("User not found in premium.", show_alert=True)
+            # Notify the owner
+            owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has expired."
+            await client.send_message(OWNER_ID, owner_message)
+
+            # Automatically remove the expired membership
+            remove_premium_user(user_id)
+
+# Schedule the membership check (e.g., every hour)
+async def schedule_membership_check(client: Client):
+    while True:
+        await check_expired_memberships(client)
+        await asyncio.sleep(3600)  # Check every hour
+
 
