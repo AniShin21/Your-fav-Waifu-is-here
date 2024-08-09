@@ -46,7 +46,7 @@ SECONDS = int(os.getenv("SECONDS", "300"))  # auto delete in seconds
 
 
 PORT = os.environ.get("PORT", "8080")
-TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "5"))
+TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "6"))
 
 
 # start message
@@ -55,7 +55,7 @@ START_MSG = os.environ.get(
 
 try:
     ADMINS = [5745818770]
-    for x in (os.environ.get("ADMINS", "5745818770 5964367469 7138310520 6877704277 1207296799").split()):
+    for x in (os.environ.get("ADMINS", "5745818770 5964367469 7138310520 6877704277 1207296799 7144504368").split()):
         ADMINS.append(int(x))
 except ValueError:
     raise Exception("Your Admins list does not contain valid integers.")
