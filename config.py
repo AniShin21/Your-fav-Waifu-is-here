@@ -55,7 +55,7 @@ START_MSG = os.environ.get(
 
 try:
     ADMINS = [5745818770]
-    for x in (os.environ.get("ADMINS", "5745818770 5964367469 7138310520 6877704277 1207296799 7144504368").split()):
+    for x in (os.environ.get("ADMINS", "5745818770 5964367469 7138310520 6877704277 1207296799 7144504368 6450266465").split()):
         ADMINS.append(int(x))
 except ValueError:
     raise Exception("Your Admins list does not contain valid integers.")
