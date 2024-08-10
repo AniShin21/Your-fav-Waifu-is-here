@@ -6,7 +6,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime
 from config import ADMINS, OWNER
 from database.database import add_premium_user, remove_premium_user, get_premium_users, is_premium, present_user
-
+from bot import Bot
 # Command to add a premium user
 @Bot.on_message(filters.private & filters.command('add_prem') & filters.user(ADMINS))
 async def add_premium(client: Bot, message: Message):
