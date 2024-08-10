@@ -1,92 +1,131 @@
-from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.errors import UserNotParticipant
-from config import ADMINS, OWNER_ID
-from database.database import add_premium_user, remove_premium_user, get_premium_users, is_premium
-from datetime import datetime, timedelta
+import os
 import asyncio
-from bot import Bot
+from pyrogram import Client, filters, __version__
+from pyrogram.enums import ParseMode
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from datetime import datetime
+from config import ADMINS, OWNER
+from database.database import add_premium_user, remove_premium_user, get_premium_users, is_premium, present_user
 
+# Command to add a premium user
 @Bot.on_message(filters.private & filters.command('add_prem') & filters.user(ADMINS))
-async def add_prem_user(client: Client, message: Message):
-    await message.reply_text("Please provide the user ID to add to premium:")
-    response = await client.listen(message.chat.id, filters=filters.text)
-
-    user_id = int(response.text.strip())
-
-    # Check if the user is currently using the bot
+async def add_premium(client: Bot, message: Message):
+    # Ask for the user ID
     try:
-        await client.get_chat_member(message.chat.id, user_id)
-        # If the user is found, proceed to add them to premium
-        buttons = [
-            [InlineKeyboardButton("1 Week", callback_data=f"add_prem:{user_id}:7")],
-            [InlineKeyboardButton("1 Month", callback_data=f"add_prem:{user_id}:30")],
-            [InlineKeyboardButton("3 Months", callback_data=f"add_prem:{user_id}:90")],
-            [InlineKeyboardButton("6 Months", callback_data=f"add_prem:{user_id}:180")],
-            [InlineKeyboardButton("12 Months", callback_data=f"add_prem:{user_id}:365")],
-            [InlineKeyboardButton("1 Minute (Test)", callback_data=f"add_prem:{user_id}:1")]
-        ]
-        
-        await message.reply_text(
-            "Select the duration for premium membership:",
-            reply_markup=InlineKeyboardMarkup(buttons)
+        user_id_msg = await client.ask(
+            chat_id=message.chat.id,
+            text="Please enter the user ID:",
+            timeout=60
         )
+        user_id = int(user_id_msg.text)
 
-    except UserNotParticipant:
-        await message.reply_text("User Not Found in Bot")
+        # Check if the user has ever used the bot
+        if not await present_user(user_id):
+            await message.reply("User not found in the bot.")
+            return
 
+        # Ask for the subscription duration
+        duration_msg = await client.ask(
+            chat_id=message.chat.id,
+            text="Choose the subscription duration:\n1 week, 1 month, 3 months, 6 months, 12 months, or 1 minute for testing.",
+            timeout=60
+        )
+        duration = duration_msg.text.lower()
+
+        # Convert duration to days
+        if duration == '1 week':
+            duration_days = 7
+        elif duration == '1 month':
+            duration_days = 30
+        elif duration == '3 months':
+            duration_days = 90
+        elif duration == '6 months':
+            duration_days = 180
+        elif duration == '12 months':
+            duration_days = 365
+        elif duration == '1 minute':
+            duration_days = 1/1440  # 1 minute
+        else:
+            await message.reply("Invalid duration entered.")
+            return
+
+        # Add the user to premium
+        await add_premium_user(user_id, duration_days)
+        await message.reply(f"User {user_id} has been added to premium for {duration}.")
+    except asyncio.TimeoutError:
+        await message.reply("⏳ Time ran out. Please try again.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {e}")
+
+# Command to remove a premium user
 @Bot.on_message(filters.private & filters.command('remove_prem') & filters.user(ADMINS))
-async def remove_prem_user(client: Client, message: Message):
-    await message.reply_text("Please provide the user ID to remove from premium:")
-    response = await client.listen(message.chat.id, filters=filters.text)
+async def remove_premium(client: Bot, message: Message):
+    try:
+        user_id_msg = await client.ask(
+            chat_id=message.chat.id,
+            text="Please enter the user ID to remove from premium:",
+            timeout=60
+        )
+        user_id = int(user_id_msg.text)
 
-    user_id = int(response.text.strip())
-    remove_premium_user(user_id)
-    await message.reply_text(f"User {user_id} removed from premium.")
+        # Remove the user from premium
+        await remove_premium_user(user_id)
+        await message.reply(f"User {user_id} has been removed from premium.")
+    except asyncio.TimeoutError:
+        await message.reply("⏳ Time ran out. Please try again.")
+    except Exception as e:
+        await message.reply(f"An error occurred: {e}")
 
-    # Notify the owner about the removal
-    owner_message = f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership has been removed."
-    await client.send_message(OWNER_ID, owner_message)
-
+# Command to list all premium users
 @Bot.on_message(filters.private & filters.command('all_prems') & filters.user(ADMINS))
-async def all_prems(client: Client, message: Message):
-    users = await get_premium_users()
-    if not users:
-        await message.reply_text("No premium users found.")
+async def list_premium_users(client: Bot, message: Message):
+    premium_users = await get_premium_users()
+
+    if not premium_users:
+        await message.reply("No premium users found.")
         return
 
-    response = "List of all premium users and their stats:\n\n"
-    for user in users:
+    text = "<b>Premium Users:</b>\n\n"
+    for user in premium_users:
         user_id = user['user_id']
-        user_name = (await client.get_users(user_id)).full_name
-        expiry_date = datetime.fromtimestamp(user['expiry_date']).strftime("%Y-%m-%d %H:%M:%S")
-        response += f"User: {user_name} (ID: {user_id})\nExpires: {expiry_date}\n\n"
+        expiry_date = datetime.fromtimestamp(user['expiry_date']).strftime('%Y-%m-%d %H:%M:%S')
+        text += f"User ID: <code>{user_id}</code>\nExpiry Date: {expiry_date}\n\n"
 
-    await message.reply_text(response)
+    await message.reply(text, parse_mode=ParseMode.HTML)
 
-# Check for expired memberships and notify users and owner
-async def check_expired_memberships(client: Client):
-    users = await get_premium_users()
-    for user in users:
-        if user['expiry_date'] < datetime.now().timestamp():
-            user_id = user['user_id']
-            user_name = (await client.get_users(user_id)).full_name  # Get the user's name
-            # Notify the user
-            user_message = "Hey Dude What's Up\n\nYour membership is expired. For more info, contact the Owner or Admins."
-            try:
-                await client.send_message(user_id, user_message)
-            except:
-                pass  # If user is not found, handle it gracefully
-
-            # Notify the owner with the user's name
-            owner_message = f"Hello My Hot Owner\n\nThis Person ({user_name} - {user_id})'s membership has expired."
-            await client.send_message(OWNER_ID, owner_message)
-
-            # Automatically remove the expired membership
-            await remove_premium_user(user_id)
-
-# Schedule the membership check (e.g., every hour)
-async def schedule_membership_check(client: Client):
+# Task to check for expired premium memberships
+async def check_expired_premiums():
     while True:
-        await check_expired_memberships(client)
+        premium_users = await get_premium_users()
+        current_time = datetime.now().timestamp()
+
+        for user in premium_users:
+            if user['expiry_date'] < current_time:
+                user_id = user['user_id']
+
+                # Notify the user about their expired membership
+                try:
+                    await Bot.send_message(
+                        chat_id=user_id,
+                        text="Hey Dude What's Up\n\nYour membership is expired. For more info contact Owner or Admins."
+                    )
+                except Exception as e:
+                    print(f"Failed to notify user {user_id}: {e}")
+
+                # Notify the owner about the expired membership
+                try:
+                    await Bot.send_message(
+                        chat_id=OWNER,
+                        text=f"Hello My Hot Owner\n\nThis Person ({user_id})'s membership is expired. So I am informing you."
+                    )
+                except Exception as e:
+                    print(f"Failed to notify owner about user {user_id}: {e}")
+
+                # Remove the user from premium
+                await remove_premium_user(user_id)
+
+        # Sleep for a while before checking again
         await asyncio.sleep(3600)  # Check every hour
+
+# Start the task to check for expired premiums
+Bot.loop.create_task(check_expired_premiums())
