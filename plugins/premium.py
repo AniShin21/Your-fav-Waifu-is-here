@@ -4,6 +4,9 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from datetime import datetime, timedelta
 from bot import Bot  # Import your Bot instance
 from database.premium_database import add_premium_user, remove_premium_user, is_premium, get_premium_users
+from config import ADMINS
+
+
 
 @Bot.on_message(filters.command('add_premium') & filters.private & filters.user(ADMINS))
 async def add_premium(client: Bot, message: Message):
