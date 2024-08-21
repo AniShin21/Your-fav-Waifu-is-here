@@ -3,7 +3,7 @@ from datetime import datetime
 from pyrogram import filters
 from bot import Bot
 from config import ADMINS
-from premium_database import add_premium_user, remove_premium_user, get_premium_users, is_premium
+from database.premium_database import add_premium_user, remove_premium_user, get_premium_users, is_premium
 
 async def notify_expired_premium_users(client: Bot):
     while True:
