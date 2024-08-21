@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from bot import Bot
 from config import ADMINS, OWNER
-from database.database import add_premium_user, remove_premium_user, is_premium, get_premium_users
+from database.premium_database import add_premium_user, remove_premium_user, is_premium, get_premium_users
 
 # Add a user to premium
 @Bot.on_message(filters.command('add_prem') & filters.private & filters.user(ADMINS))
