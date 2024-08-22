@@ -29,8 +29,8 @@ from config import (
 )
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
 from database.database import add_user, del_user, full_userbase, present_user
-from shortzy import Shortzy
 from database.premium_database import is_premium
+from shortzy import Shortzy
 
 
 """ 
@@ -86,16 +86,15 @@ SECONDS = int(os.getenv("SECONDS", "300"))
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
-   id = message.from_user.id
-    owner_id = ADMINS
-    
-    if id == owner_id:
-        await message.reply("You have special access! Additional actions can be added here.")
-    elif:
-        premium_status = await is_premium(user_id)
-        if premium_status:
-            await message.reply("You are a premium user with special access!")
-        # After this line dont change any think
+    id = message.from_user.id
+    owner_id = ADMINS  # Fetch the owner's ID from config
+
+    # Check if the user is the owner
+    if id == owner_id or is_premium:
+        # Owner-specific actions
+        # You can add any additional actions specific to the owner here
+        await message.reply("You are the owner! Additional actions can be added here.")
+
     else:
         if not await present_user(id):
             try:
@@ -114,7 +113,7 @@ async def start_command(client: Client, message: Message):
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"Your token successfully verified and valid for: 24 Hour", reply_markup=reply_markup, protect_content=False, quote=True)
+            await message.reply(f"Your token successfully verified and valid for: 12 Hour", reply_markup=reply_markup, protect_content=False, quote=True)
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
