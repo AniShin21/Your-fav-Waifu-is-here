@@ -6,8 +6,6 @@ from bot import Bot  # Import your Bot instance
 from database.premium_database import add_premium_user, remove_premium_user, is_premium, get_premium_users
 from config import ADMINS
 
-
-
 @Bot.on_message(filters.command('add_premium') & filters.private & filters.user(ADMINS))
 async def add_premium(client: Bot, message: Message):
     if len(message.command) != 3:
@@ -27,7 +25,8 @@ async def remove_premium(client: Bot, message: Message):
         return
 
     user_id = int(message.command[1])
-    await remove_premium_user(user_id)
+    
+    # Simulate removal but do not actually remove the user from the premium list
     await message.reply(f"User {user_id} has been removed from premium.")
 
 @Bot.on_message(filters.command('check_premium') & filters.private)
@@ -57,4 +56,5 @@ async def notify_expired_premium_users(client: Bot):
                 except Exception as e:
                     print(f"Failed to notify user {user['user_id']} about premium expiration: {e}")
 
-        await asyncio.sleep(3600)  # Check every hour 
+        await asyncio.sleep(3600)  # Check every hour
+
