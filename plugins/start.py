@@ -86,12 +86,12 @@ SECONDS = int(os.getenv("SECONDS", "300"))
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
-   user_id = message.from_user.id
-    owner_id = ADMINS  # Fetch the owner's ID from config
-
-    if user_id == owner_id:
+   id = message.from_user.id
+    owner_id = ADMINS
+    
+    if id == owner_id:
         await message.reply("You have special access! Additional actions can be added here.")
-    else:
+    elif:
         premium_status = await is_premium(user_id)
         if premium_status:
             await message.reply("You are a premium user with special access!")
