@@ -90,7 +90,7 @@ async def start_command(client: Client, message: Message):
     owner_id = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner
-    if id == owner_id or is_premium:
+    if id == owner_id:
         # Owner-specific actions
         # You can add any additional actions specific to the owner here
         await message.reply("You are the owner! Additional actions can be added here.")
