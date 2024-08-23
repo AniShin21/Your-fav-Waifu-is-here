@@ -55,3 +55,25 @@ async def full_userbase():
 async def del_user(user_id: int):
     await user_data.delete_one({'_id': user_id})
     return
+
+#################  Database Pagal hai mat suno uss ki baat tum ##################
+async def get_premium_status(user_id):
+    user = await db.premium_users.find_one({"user_id": user_id})
+    if user and user["expiry_date"] > datetime.utcnow():
+        return True
+    return False
+
+async def add_premium_user(user_id, duration):
+    expiry_date = datetime.utcnow() + timedelta(seconds=duration)
+    await db.premium_users.update_one(
+        {"user_id": user_id},
+        {"$set": {"expiry_date": expiry_date}},
+        upsert=True
+    )
+
+async def remove_premium_user(user_id):
+    await db.premium_users.delete_one({"user_id": user_id})
+
+async def get_premium_users():
+    users = await db.premium_users.find({"expiry_date": {"$gt": datetime.utcnow()}}).to_list(None)
+    return users
