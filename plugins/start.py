@@ -27,7 +27,7 @@ from config import (
     TUT_VID,
     OWNER_ID,
 )
-from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
+from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time, is_premium
 from database.database import add_user, del_user, full_userbase, present_user
 from shortzy import Shortzy
 
@@ -89,7 +89,7 @@ async def start_command(client: Client, message: Message):
     owner_id = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner
-    if id == owner_id:
+    if id == owner_id or is_premium:
         # Owner-specific actions
         # You can add any additional actions specific to the owner here
         await message.reply("You are Spicial Additional actions can be added here.")
