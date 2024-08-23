@@ -28,7 +28,7 @@ from config import (
     OWNER_ID,
 )
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
-from database.database import add_user, del_user, full_userbase, present_user, is_premium
+from database.database import add_user, del_user, full_userbase, present_user
 from shortzy import Shortzy
 
 
@@ -92,7 +92,7 @@ async def start_command(client: Client, message: Message):
     if id == owner_id:
         # Owner-specific actions
         # You can add any additional actions specific to the owner here
-        await message.reply("You are the owner! Additional actions can be added here.")
+        await message.reply("You are Spicial Additional actions can be added here.")
 
     else:
         if not await present_user(id):
