@@ -38,11 +38,6 @@ async def is_subscribed(filter, client, update):
 
     return True
 
-async def is_premium(filter, client, update):
-    user_id = update.from_user.id
-    return await get_premium_status(user_id)
-
-
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
@@ -153,4 +148,4 @@ def get_readable_time(seconds: int) -> str:
 
 
 subscribed = filters.create(is_subscribed)
-premium_user = filters.create(is_premium)
+
