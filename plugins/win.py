@@ -4,6 +4,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.enums import ParseMode
 from database.database import full_userbase  # Assuming you have a collection for users
 from config import ADMINS
+from bot import Bot
 # Assuming Bot is your pyrogram Client instance
 @Bot.on_message(filters.command("win") & filters.private & filters.user(ADMINS))
 async def win_command(bot: Client, message: Message):
