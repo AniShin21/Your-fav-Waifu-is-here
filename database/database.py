@@ -62,7 +62,7 @@ default_verify = False
 
 
 # MongoDB Utility Functions
-async def db_verify_status(user_id):
+async def db_status(user_id):
     """Get the verification status of a user."""
     user = await user_data.find_one({'_id': user_id})
     if user:
@@ -70,7 +70,7 @@ async def db_verify_status(user_id):
     return default_verify
 
 
-async def db_add_verified_user(user_id, username=None, first_name=None, last_name=None):
+async def add_verified(user_id, username=None, first_name=None, last_name=None):
     """Add a user to the verified_users collection."""
     existing_user = await user_data.find_one({'_id': user_id})
     if existing_user:
