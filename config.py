@@ -23,13 +23,13 @@ API_HASH = os.environ.get("API_HASH", "fa30f58d01b5b03b3e51cd917b5ebfe8")
 
 OWNER = os.environ.get("OWNER", "@Obviously_Aizen")  # Owner username
 OWNER_ID = int(os.environ.get("OWNER_ID", "-1002027441561"))  # Owner user id
-DB_URL = os.environ.get("DB_URL", "")
-DB_NAME = os.environ.get("DB_NAME", "")
+DB_URL = os.environ.get("DB_URL", "mongodb+srv://Lol:lolxd@cluster0.q5mtx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+DB_NAME = os.environ.get("DB_NAME", "Cluster0")
 
 
 # Your Bot Token System Goes Here
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "instantearn.in")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "7e2bbc9a4cab386cbc14e0ac5a106d11180f8d48")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "f786e7834aa4f9f6d656dfc81c88389bb6a8263f")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 60)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Ultroid_Official/18")
