@@ -16,7 +16,7 @@ async def cb_handler(client, query):
             await query.answer("✅ You are already verified and in the giveaway!")
         else:
             # Add the user to the verified list
-            added = await db_add_verified_user(
+            added = await add_verified(
                 user_id=user.id,
                 username=user.username,
                 first_name=user.first_name,
