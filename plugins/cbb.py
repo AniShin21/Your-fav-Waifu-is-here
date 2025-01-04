@@ -1,25 +1,42 @@
-from pyrogram import __version__
-from bot import Bot
-from config import OWNER_ID
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from database.database import *
 
 
 @Bot.on_callback_query()
-async def cb_handler(client: Bot, query: CallbackQuery):
+async def cb_handler(client, query):
+    """Handle callback queries for giveaway and verification."""
     data = query.data
-    if data == "about":
-        await query.message.edit_text(
-            text=f"<b>╭━━━━━━━━━━━━━━━➣\n┣⪼ Owner : <a href='tg://user?id={OWNER_ID}'>Vergil</a>\n┣⪼ Bot Updates : <a href='https://t.me/ikigai_bots'>IKigai</a>\n┣⪼ Support Channel: <a href='https://t.me/ikigai_chats'>Ikigai Support</a>\n┣⪼ Our Network :<a href='https://t.me/ikigai_Network'>Ikigai Network</a>\n┣⪼ Movies Channel :<a href='https://t.me/ikigai_Movies'>Ikigai Movies</a>\n╰───────────────⍟</b>",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton("ᴄʟᴏꜱᴇ", callback_data="close")
-                    ]
-                ]
+    user = query.from_user
+
+    if data == "giveaway":
+        # Check if user is already verified
+        already_verified = await db_is_already_verified(user.id)
+
+        if already_verified:
+            # User is already verified
+            await query.answer("✅ You are already verified and in the giveaway!")
+        else:
+            # Add the user to the verified list
+            added = await db_add_verified_user(
+                user_id=user.id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name
             )
-        )
+            if added:
+                await query.answer("🎉 Successfully added to the giveaway!")
+                await query.message.edit_text(
+                    text="🎉 You are now verified and in the giveaway!",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton("ᴄʟᴏꜱᴇ", callback_data="close")]
+                        ]
+                    )
+                )
+            else:
+                await query.answer("⚠️ Something went wrong. Please try again.")
+
     elif data == "close":
+        # Close the message
         await query.message.delete()
         try:
             await query.message.reply_to_message.delete()
