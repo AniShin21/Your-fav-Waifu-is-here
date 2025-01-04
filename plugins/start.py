@@ -83,7 +83,7 @@ temp_msg = await message.reply("Please wait...")
 # SECONDS = int(os.getenv("SECONDS", "1200"))
 SECONDS = int(os.getenv("SECONDS", "300"))
 
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
+@Bot.on_message(filters.command('start') & filters.private)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     owner_id = ADMINS  # Fetch the owner's ID from config
@@ -187,7 +187,7 @@ async def start_command(client: Client, message: Message):
         elif verify_status['is_verified']:
             reply_markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton("Proofs", callback_data="about"),
-                  InlineKeyboardButton("Giveaway", callback_data="close")]]
+                  InlineKeyboardButton("Giveaway", callback_data="giveaway")]]
             )
             await message.reply_text(
                 text=START_MSG.format(
@@ -225,7 +225,7 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
 # =====================================================================================##
 
 
-@Bot.on_message(filters.command('start') & filters.private)
+@Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def not_joined(client: Client, message: Message):
     buttons = [
         [
