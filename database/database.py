@@ -58,3 +58,40 @@ async def del_user(user_id: int):
 
 #################  Database Pagal hai mat suno uss ki baat tum ##################
 
+default_verify = False
+
+
+# MongoDB Utility Functions
+async def db_verify_status(user_id):
+    """Get the verification status of a user."""
+    user = await user_data.find_one({'_id': user_id})
+    if user:
+        return user.get('verify_status', default_verify)
+    return default_verify
+
+
+async def db_add_verified_user(user_id, username=None, first_name=None, last_name=None):
+    """Add a user to the verified_users collection."""
+    existing_user = await user_data.find_one({'_id': user_id})
+    if existing_user:
+        return False  # User already exists
+    await user_data.insert_one({
+        '_id': user_id,
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
+        'verify_status': True
+    })
+    return True
+
+
+async def db_is_already_verified(user_id):
+    """Check if a user is already verified."""
+    user = await user_data.find_one({'_id': user_id})
+    return user is not None
+
+
+async def db_get_all_verified_users():
+    """Get all verified users."""
+    users = await user_data.find({'verify_status': True}).to_list(length=None)
+    return users
