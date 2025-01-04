@@ -1,4 +1,6 @@
 from database.database import *
+from bot import Bot
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 
 @Bot.on_callback_query()
