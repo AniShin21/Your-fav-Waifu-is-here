@@ -16,7 +16,7 @@ print(f'Public IP Address: {ip}')
 # Load the .env file
 load_dotenv()
 
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7711776564:AAE8BsuMY6l99GTT829HcdC8uzgoQzoPBto")
 APP_ID = int(os.environ.get("APP_ID", "20825278"))
 API_HASH = os.environ.get("API_HASH", "fa30f58d01b5b03b3e51cd917b5ebfe8")
 
@@ -30,13 +30,13 @@ DB_NAME = os.environ.get("DB_NAME", "")
 # Your Bot Token System Goes Here
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "instantearn.in")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "7e2bbc9a4cab386cbc14e0ac5a106d11180f8d48")
-VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
+VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 60)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID", "https://t.me/Ultroid_Official/18")
 
 
 # Here Goes Your Channel Script
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002190663771"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002181491329"))
 FORCE_SUB_CHANNEL1 = int(os.environ.get("FORCE_SUB_CHANNEL1", "0"))
 FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "0"))
 FORCE_SUB_CHANNEL3 = int(os.environ.get("FORCE_SUB_CHANNEL3", "0"))
@@ -51,7 +51,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "6"))
 
 # start message
 START_MSG = os.environ.get(
-    "START_MESSAGE", "<b><i>Hᴇʟʟᴏ Tʜᴇʀᴇ {mention} Dᴀʀʟɪɴɢ 👋\n\nI sᴛᴀʏ ᴜᴘ ᴀʟʟ ɴɪɢʜᴛ ᴛᴏ ғᴜʟғɪʟʟ ʏᴏᴜʀ ғᴀɴᴛᴀsɪᴇs 🫦✨</i></b>")
+    "START_MESSAGE", "<b>Hy {first},\nClick On Bellow Button To Join Giveaway</b>")
 
 try:
     ADMINS = [5745818770]
@@ -73,7 +73,7 @@ DISABLE_CHANNEL_BUTTON = os.environ.get(
     "DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "‌ 𝖠𝗂𝗌𝗁~ 𝖲𝗍𝗈𝗉!! *𝖻𝗅𝗎𝗌𝗁*"
+USER_REPLY_TEXT = "Dont Message"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(5745818770)
